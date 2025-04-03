@@ -6,9 +6,9 @@ const { uploadImage } = require("../services/Cloudinary.service");
 
 module.exports.registerUserController = async (req, res) => {
   try {
-    // if (!req.file) {
-    //   return res.status(400).json({ message: "Image is required" });
-    // }
+    if (!req.file) {
+      return res.status(400).json({ message: "Image is required" });
+    }
 
     const imageBuffer = req.file?.buffer;
     const imagedata = await uploadImage(imageBuffer);

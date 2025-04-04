@@ -17,6 +17,31 @@ const userSchema = new mongoose.Schema({
     trim: true,
   },
 
+  dropped: {
+    type: String,
+    default: "Not available",
+  },
+
+  lastActivity: {
+    type: String,
+    default: "Not available",
+  },
+
+  votes: [
+    {
+      type: {
+        type: String,
+        enum: ["upvote", "downvote"],
+      },
+      question: {
+        type: String,
+      },
+      time: {
+        type: String,
+      },
+    },
+  ],
+
   media: {
     type: Object,
     default:

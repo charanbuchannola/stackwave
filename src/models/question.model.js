@@ -1,14 +1,36 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const questionSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  body: { type: String, required: true },
-  tags: [String],
-  authorId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  votes: { type: Number, default: 0 },
-  createdAt: { type: Date, default: Date.now },
-});
+const questionSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    body: {
+      type: String,
+      required: true,
+    },
 
-const questionModel = mongoose.model("Question", questionSchema);
+    tags: [String],
 
-module.exports = questionModel;
+    askedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    votes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Vote",
+      },
+    ],
+    answers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Answer",
+      },
+    ],
+  },
+  { timestamps: true }
+);
+
+export default mongoose.model("Question", questionSchema);

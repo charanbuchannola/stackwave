@@ -1,27 +1,26 @@
 import mongoose from "mongoose";
 
-const answerSchema = new mongoose.Schema(
+const voteSchema = new mongoose.Schema(
   {
-    content: {
+    type: {
       type: String,
+      enum: ["upvote", "downvote"],
       required: true,
+    },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
     question: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Question",
     },
-    answeredBy: {
+    answer: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Answer",
     },
-    votes: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Vote",
-      },
-    ],
   },
   { timestamps: true }
 );
 
-export default mongoose.model("Answer", answerSchema);
+export default mongoose.model("Vote", voteSchema);

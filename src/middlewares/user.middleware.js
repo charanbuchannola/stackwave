@@ -1,4 +1,5 @@
-const userModel = require("../models/user.model");
+const userModel = require("../models/usermodel");
+const jwt = require("jsonwebtoken");
 
 module.exports.authUser = async (req, res, next) => {
   try {
@@ -8,14 +9,14 @@ module.exports.authUser = async (req, res, next) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const decoded = userModel.verifyToken(token);
+    const decoded = await jwt.verify(token, process.env.JWT_SECRET);
 
     const user = await userModel.findById({
-      
       _id: decoded.id,
     });
 
     req.user = user;
+    console.log(req.user);
 
     next();
   } catch (err) {

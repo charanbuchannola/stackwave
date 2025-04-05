@@ -1,13 +1,14 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
-    name: {
+    username: {
       type: String,
       required: true,
     },
     media: {
-      type: String, // for initials like "FG" or profile avatar
+      type: Object,
+      required: true,
     },
     email: {
       type: String,
@@ -42,4 +43,4 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("User", userSchema);
+module.exports = mongoose.model("User", userSchema);

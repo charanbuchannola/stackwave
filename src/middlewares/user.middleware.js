@@ -11,6 +11,7 @@ module.exports.authUser = async (req, res, next) => {
     const decoded = userModel.verifyToken(token);
 
     const user = await userModel.findById({
+      
       _id: decoded.id,
     });
 

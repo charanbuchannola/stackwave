@@ -21,6 +21,7 @@ const questionSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Vote",
+        
       },
     ],
     answers: [

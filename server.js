@@ -1,6 +1,7 @@
 const { Server } = require("socket.io");
 require("dotenv").config();
 const app = require("./src/app");
+const jwt = require("jsonwebtoken");
 
 const connect = require("./src/db/db");
 connect();
@@ -14,18 +15,25 @@ const io = new Server(server, {
 });
 
 io.use((socket, next) => {
-  const token = socket.handshake.auth.token;
-  if (!token) {
-    console.log("Connection rejected: No token provided");
-    return next(new Error("Authentication error"));
-  }
+  try {
+    const token =
+      socket.handshake.auth?.token ||
+      socket.handshake.headers.authorization?.split(" ")[1];
+    if (!token) {
+      console.log("Connection rejected: No token provided");
+      return next(new Error("Authentication error"));
+    }
 
-  // Verify the token (replace with your token verification logic)
-  if (token === process.env.AUTH_TOKEN) {
-    console.log("Authentication successful");
-    return next();
-  } else {
-    console.log("Connection rejected: Invalid token");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (!decoded) {
+      return next(new Error("Authentication error"));
+    }
+    socket.user = decoded;
+    console.log(decoded);
+    next();
+  } catch (error) {
+    console.error("Error during authentication:", error);
     return next(new Error("Authentication error"));
   }
 });
@@ -45,5 +53,5 @@ io.on("connection", (socket) => {
 });
 
 server.listen(process.env.PORT, () => {
-  console.log(`server is created on server ${process.env.port}`);
+  console.log(`server is created on port ${process.env.PORT}`);
 });

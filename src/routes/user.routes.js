@@ -16,4 +16,6 @@ router.post("/login", loginUserController);
 
 router.get("/profile", authUser, getUserProfileController);
 
+router.post('/create',authUser, createchatroomController)
+
 module.exports = router;

@@ -46,7 +46,10 @@ module.exports.registerUserController = async (req, res) => {
 
     console.log(user);
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    const token = jwt.sign(
+      { id: user._id, name: user.username },
+      process.env.JWT_SECRET
+    );
 
     res.status(200).json({ token, user });
   } catch (error) {
@@ -72,7 +75,10 @@ module.exports.loginUserController = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    const token = jwt.sign(
+      { id: user._id, name: user.username },
+      process.env.JWT_SECRET
+    );
     res.status(200).json({ token, user });
   } catch (error) {
     console.log(error);
@@ -82,7 +88,7 @@ module.exports.loginUserController = async (req, res) => {
 
 module.exports.getUserProfileController = async (req, res) => {
   try {
-    const user = await userModel.findById(req.user.id);
+    const user = await userModel.findById(req.user._id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -96,7 +102,7 @@ module.exports.getUserProfileController = async (req, res) => {
 module.exports.updateUserProfileController = async (req, res) => {
   try {
     const user = await userModel.findByIdAndUpdate(
-      req.user.id,
+      req.user._id,
       { $set: req.body },
       { new: true }
     );

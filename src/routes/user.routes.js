@@ -6,6 +6,10 @@ const {
   getUserProfileController,
 } = require("../controllers/user.controller");
 
+const {
+  chatroomController,
+} = require("../controllers/createchatroom.controller"); 
+
 const { authUser } = require("../middlewares/user.middleware");
 
 const { upload } = require("../services/Multer.service");
@@ -16,6 +20,6 @@ router.post("/login", loginUserController);
 
 router.get("/profile", authUser, getUserProfileController);
 
-router.post('/create',authUser, createchatroomController)
+router.post("/create", authUser, chatroomController);
 
 module.exports = router;

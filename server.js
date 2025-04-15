@@ -34,6 +34,8 @@ io.use((socket, next) => {
       return next(new Error("Authentication error"));
     }
 
+    console.log(decoded);
+
     socket.user = decoded; // Attach decoded user to socket
     next();
   } catch (error) {
@@ -50,26 +52,23 @@ io.on("connection", (socket) => {
 
   socket.on("join-room", (roomId) => {
     socket.join(roomId);
-    console.log(
-      `${
-        socket.user?.name || socket.user?.username || "Unknown User"
-      } joined room ${roomId}`
-    );
+    console.log(`${socket.user?.name} joined room ${roomId}`);
+    console.log("User is in rooms:", socket.rooms); // This should include roomId
 
-    // Notify all participants in the room, including the sender
+    // Notify all users in the room
     io.to(roomId).emit("receive-message", {
       user: "System",
-      message: `${socket.user?.name || "A user"} joined the room.`,
-      time: new Date(),
+      message: `${socket.user?.name || "Someone"} joined.`,
     });
   });
 
   socket.on("send-message", ({ roomId, message }) => {
-    const user = socket.user?.name || "Unknown User";
-    const msgData = { user, message, time: new Date() };
+    const user = socket.user?.name || "Unknown";
+    const msgData = { user, message };
+    console.log(`💬 Message to ${roomId}:`, msgData);
 
-    // Broadcast the message to all participants in the room
-    io.to(roomId).emit("receive-message", msgData);
+    // ✅ Only send to others in the room, not to sender
+    socket.broadcast.to(roomId).emit("receive-message", msgData);
   });
 
   socket.on("disconnect", () => {

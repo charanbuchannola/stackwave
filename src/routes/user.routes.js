@@ -8,7 +8,7 @@ const {
 
 const {
   chatroomController,
-} = require("../controllers/createchatroom.controller"); 
+} = require("../controllers/createchatroom.controller");
 
 const { authUser } = require("../middlewares/user.middleware");
 
@@ -21,5 +21,9 @@ router.post("/login", loginUserController);
 router.get("/profile", authUser, getUserProfileController);
 
 router.post("/create", authUser, chatroomController);
+
+router.get("/me", authUser, (req, res) => {
+  res.status(200).json(req.user); // req.user is attached by authUser middleware
+});
 
 module.exports = router;

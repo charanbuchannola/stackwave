@@ -46,7 +46,7 @@ io.on("connection", (socket) => {
   console.log(
     "User connected",
     socket.user?.name || socket.user?.username || "Unknown User"
-  ); // Added fallback for debugging
+  );
 
   socket.on("join-room", (roomId) => {
     socket.join(roomId);
@@ -55,14 +55,21 @@ io.on("connection", (socket) => {
         socket.user?.name || socket.user?.username || "Unknown User"
       } joined room ${roomId}`
     );
+
+    // Notify all participants in the room, including the sender
+    io.to(roomId).emit("receive-message", {
+      user: "System",
+      message: `${socket.user?.name || "A user"} joined the room.`,
+      time: new Date(),
+    });
   });
 
   socket.on("send-message", ({ roomId, message }) => {
-    io.to(roomId).emit("receive-message", {
-      user: socket.user.name,
-      message,
-      time: new Date(),
-    });
+    const user = socket.user?.name || "Unknown User";
+    const msgData = { user, message, time: new Date() };
+
+    // Broadcast the message to all participants in the room
+    io.to(roomId).emit("receive-message", msgData);
   });
 
   socket.on("disconnect", () => {

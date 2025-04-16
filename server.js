@@ -71,6 +71,11 @@ io.on("connection", (socket) => {
     socket.broadcast.to(roomId).emit("receive-message", msgData);
   });
 
+  // Handle live code sync
+  socket.on("code-change", ({ roomId, code }) => {
+    socket.broadcast.to(roomId).emit("code-update", { code });
+  });
+
   socket.on("disconnect", () => {
     console.log("User disconnected");
   });

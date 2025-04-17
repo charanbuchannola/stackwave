@@ -2,7 +2,6 @@ const { Server } = require("socket.io");
 require("dotenv").config();
 const app = require("./src/app");
 const jwt = require("jsonwebtoken");
-
 const connect = require("./src/db/db");
 connect();
 
@@ -28,15 +27,11 @@ io.use((socket, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("Decoded JWT:", decoded); // Log the decoded JWT for debugging
-
     if (!decoded) {
       return next(new Error("Authentication error"));
     }
 
-    console.log(decoded);
-
-    socket.user = decoded; // Attach decoded user to socket
+    socket.user = decoded;
     next();
   } catch (error) {
     console.error("Error during authentication:", error);
@@ -45,17 +40,11 @@ io.use((socket, next) => {
 });
 
 io.on("connection", (socket) => {
-  console.log(
-    "User connected",
-    socket.user?.name || socket.user?.username || "Unknown User"
-  );
+  console.log("User connected:", socket.user?.name || "Unknown User");
 
   socket.on("join-room", (roomId) => {
     socket.join(roomId);
     console.log(`${socket.user?.name} joined room ${roomId}`);
-    console.log("User is in rooms:", socket.rooms); // This should include roomId
-
-    // Notify all users in the room
     io.to(roomId).emit("receive-message", {
       user: "System",
       message: `${socket.user?.name || "Someone"} joined.`,
@@ -65,13 +54,10 @@ io.on("connection", (socket) => {
   socket.on("send-message", ({ roomId, message }) => {
     const user = socket.user?.name || "Unknown";
     const msgData = { user, message };
-    console.log(`💬 Message to ${roomId}:`, msgData);
-
-    // ✅ Only send to others in the room, not to sender
     socket.broadcast.to(roomId).emit("receive-message", msgData);
   });
 
-  // Handle live code sync
+  // ✅ Handle real-time code sync
   socket.on("code-change", ({ roomId, code }) => {
     socket.broadcast.to(roomId).emit("code-update", { code });
   });

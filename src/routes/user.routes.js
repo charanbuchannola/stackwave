@@ -6,6 +6,7 @@ const {
   registerUserController,
   loginUserController,
   getUserProfileController,
+  getAllUsersController,
 } = require("../controllers/user.controller");
 
 const {
@@ -16,8 +17,6 @@ const { authUser } = require("../middlewares/user.middleware");
 
 const { upload } = require("../services/Multer.service");
 
-
-
 router.post("/register", upload, registerUserController);
 
 router.post("/login", loginUserController);
@@ -25,6 +24,10 @@ router.post("/login", loginUserController);
 router.get("/profile", authUser, getUserProfileController);
 
 router.post("/create", authUser, chatroomController);
+
+router.get("/allusers", authUser, getAllUsersController);
+
+router.get("/user/:id", authUser, getAllUsersController);
 
 router.get("/me", authUser, (req, res) => {
   res.status(200).json(req.user); // req.user is attached by authUser middleware

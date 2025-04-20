@@ -86,6 +86,29 @@ module.exports.loginUserController = async (req, res) => {
   }
 };
 
+module.exports.getAllUsersController = async (req, res) => {
+  try {
+    const users = await userModel.find(); // Fetch all users from the database
+    res.status(200).json(users); // Return users in the response
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching users" });
+  }
+};
+
+module.exports.getUserByIdController = async (req, res) => {
+  try {
+    const user = await userModel.findById(req.params.id); // Fetch a user by ID
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(user); // Return the user data
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching user" });
+  }
+};
+
 module.exports.getUserProfileController = async (req, res) => {
   try {
     const user = await userModel.findById(req.user._id);

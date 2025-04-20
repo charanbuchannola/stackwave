@@ -7,6 +7,7 @@ const {
   loginUserController,
   getUserProfileController,
   getAllUsersController,
+  getUserByIdController,
 } = require("../controllers/user.controller");
 
 const {
@@ -27,7 +28,7 @@ router.post("/create", authUser, chatroomController);
 
 router.get("/allusers", authUser, getAllUsersController);
 
-router.get("/user/:id", authUser, getAllUsersController);
+router.get("/user/:id", authUser, getUserByIdController);
 
 router.get("/me", authUser, (req, res) => {
   res.status(200).json(req.user); // req.user is attached by authUser middleware

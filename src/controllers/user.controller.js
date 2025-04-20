@@ -98,14 +98,47 @@ module.exports.getAllUsersController = async (req, res) => {
 
 module.exports.getUserByIdController = async (req, res) => {
   try {
-    const user = await userModel.findById(req.params.id); // Fetch a user by ID
+    console.log("Fetching user by ID:", req.params.id); // Log the user ID
+
+    const user = await userModel
+      .findById(req.params.id)
+      .populate("questions")
+      .populate("answers");
+    // Ensure "votes" is a valid field in the schema
+
     if (!user) {
+      console.log("User not found for ID:", req.params.id); // Log if user is not found
       return res.status(404).json({ message: "User not found" });
     }
-    res.status(200).json(user); // Return the user data
+
+    console.log("User fetched successfully:", user); // Log the fetched user
+    res.status(200).json(user);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error fetching user" });
+    console.error("Error fetching user by ID:", err); // Log the error
+    res.status(500).json({
+      message:
+        "Error fetching user. Please check the server logs for more details.",
+    });
+  }
+};
+
+module.exports.updateUserProfile = async (req, res) => {
+  const { name, media, bio } = req.body;
+
+  try {
+    const user = await userModel.findById(req.params.id);
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.name = name || user.name;
+    user.media = media || user.media;
+    user.bio = bio || user.bio;
+
+    const updated = await user.save();
+    res.status(200).json(updated);
+  } catch (err) {
+    console.error("Error updating user:", err);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
